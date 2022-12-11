@@ -7,6 +7,7 @@ package hr.algebra.dal.sql;
 
 import hr.algebra.dal.Repository;
 import hr.algebra.model.Article;
+import hr.algebra.model.Journalists;
 import hr.algebra.model.User;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -32,12 +33,18 @@ public class SqlRepository implements Repository {
     private static final String PASSWORD = "Password";
     private static final String ADMIN = "Admin";
 
-     private static final String ID_ARTICLE = "IDArticle";
+    private static final String ID_ARTICLE = "IDArticle";
     private static final String TITLE = "Title";
     private static final String LINK = "Link";
     private static final String DESCRIPTION = "Description";
     private static final String PICTURE_PATH = "PicturePath";
     private static final String PUBLISHED_DATE = "PublishedDate";
+    
+    private static final String ID_JOURNALIST = "IDJournalist";
+    private static final String FIRSTNAME = "FirstName";
+    private static final String LASTNAME = "LastName";
+    private static final String AGE = "Age";
+    private static final String EMAIL = "Email";
 
     private static final String CREATE_ARTICLE = "{ CALL createArticle (?,?,?,?,?,?) }";
     private static final String UPDATE_ARTICLE = "{ CALL updateArticle (?,?,?,?,?,?) }";
@@ -48,6 +55,13 @@ public class SqlRepository implements Repository {
   
     private static final String SELECT_USERS = "{ CALL selectUsers }";
     private static final String CREATE_USER = "{ CALL CreateUser (?,?) }";
+    
+     private static final String CREATE_JOURNALIST = "{ CALL createJournalist (?,?,?,?,?,?) }";
+    private static final String UPDATE_JOURNALIST = "{ CALL updateJournalist (?,?,?,?,?,?) }";
+    private static final String DELETE_JOURNALIST = "{ CALL deleteJournalist (?) }";
+    private static final String SELECT_JOURNALIST = "{ CALL selectJournalist (?) }";
+    private static final String SELECT_JOURNALISTS = "{ CALL selectJournalists }";
+     private static final String DELETE_JOURNALISTS = "{ CALL deleteAllJournalists }";
     
     @Override
     public List<User> selectUsers()  {
@@ -208,5 +222,129 @@ public class SqlRepository implements Repository {
             Logger.getLogger(SqlRepository.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    @Override
+    public int createJournalist(Journalists journalist) throws Exception {
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(CREATE_JOURNALIST)) {
+
+            stmt.setString("@" + FIRSTNAME, journalist.getFirstName());
+            stmt.setString("@" + LASTNAME, journalist.getLastName());
+            stmt.setString("@" + AGE, journalist.getAge());
+            stmt.setString("@" + EMAIL, journalist.getEmail());
+            stmt.setString("@" + PICTURE_PATH, journalist.getPicturePath());
+            stmt.registerOutParameter("@" + ID_JOURNALIST, Types.INTEGER);
+
+            stmt.executeUpdate();
+            return stmt.getInt("@" + ID_JOURNALIST);
+        }
+    }
+
+    @Override
+    public void createJournalists(List<Journalists> journalists) throws Exception {
+           DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(CREATE_JOURNALIST)) {
+
+            for (Journalists journalist : journalists) {
+            stmt.setString("@" + FIRSTNAME, journalist.getFirstName());
+            stmt.setString("@" + LASTNAME, journalist.getLastName());
+            stmt.setString("@" + AGE, journalist.getAge());
+            stmt.setString("@" + EMAIL, journalist.getEmail());
+            stmt.setString("@" + PICTURE_PATH, journalist.getPicturePath());
+            stmt.registerOutParameter("@" + ID_JOURNALIST, Types.INTEGER);
+
+                stmt.executeUpdate();
+            }
+        }
+    }
+
+    @Override
+    public void updateJournalist(int id, Journalists data) throws Exception {
+      DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(UPDATE_JOURNALIST)) {
+
+            stmt.setString("@" + FIRSTNAME, data.getFirstName());
+            stmt.setString("@" + LASTNAME, data.getLastName());
+            stmt.setString("@" + AGE, data.getAge());
+            stmt.setString("@" + EMAIL, data.getEmail());
+            stmt.setString("@" + PICTURE_PATH, data.getPicturePath());
+            stmt.setInt("@" + ID_JOURNALIST, id);
+
+            stmt.executeUpdate();
+        }
+    }
+
+    @Override
+    public void deleteJournalist(int id) throws Exception {
+          DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(DELETE_JOURNALIST)) {
+
+            stmt.setInt("@" + ID_JOURNALIST, id);
+
+            stmt.executeUpdate();
+        }
+    }
+
+    @Override
+    public Optional<Journalists> selectJournalist(int id) throws Exception {
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(SELECT_JOURNALIST)) {
+
+            stmt.setInt("@" + ID_JOURNALIST , id);
+            try (ResultSet rs = stmt.executeQuery()) {
+
+                if (rs.next()) {
+                    return Optional.of(new Journalists(
+                            rs.getInt(ID_JOURNALIST),
+                            rs.getString(FIRSTNAME),
+                            rs.getString(LASTNAME),
+                            rs.getString(AGE),
+                            rs.getString(EMAIL),
+                            rs.getString(PICTURE_PATH)));
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Journalists> selectJournalists() throws Exception {
+        List<Journalists> journalists = new ArrayList<>();
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(SELECT_JOURNALISTS);
+                ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                journalists.add(new Journalists(
+                        rs.getInt(ID_JOURNALIST),
+                            rs.getString(FIRSTNAME),
+                            rs.getString(LASTNAME),
+                            rs.getString(AGE),
+                            rs.getString(EMAIL),
+                            rs.getString(PICTURE_PATH)));
+            }
+        }
+        return journalists;
+    }
+
+    @Override
+    public void deleteAllJournalists() {
+          DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(DELETE_JOURNALISTS);)
+                {
+                    stmt.execute();
+    }   catch (SQLException ex) {
+            Logger.getLogger(SqlRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
      
 }

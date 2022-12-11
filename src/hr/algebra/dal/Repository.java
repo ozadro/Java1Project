@@ -7,6 +7,7 @@ package hr.algebra.dal;
 
 import hr.algebra.model.Article;
 import hr.algebra.model.User;
+import hr.algebra.model.Journalists;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,5 +30,15 @@ public interface Repository {
     Optional<Article> selectArticle(int id) throws Exception;
     List<Article> selectArticles() throws Exception;
      void deleteAllArticles();
+     
+    int createJournalist(Journalists article) throws Exception;
+    void createJournalists(List<Journalists> articles) throws Exception;    
+    void updateJournalist(int id, Journalists data) throws Exception;
+    void deleteJournalist(int id) throws Exception;
+    Optional<Journalists> selectJournalist(int id) throws Exception;
+    List<Journalists> selectJournalists() throws Exception;
+    void deleteAllJournalists();
+     
+     
    
 }

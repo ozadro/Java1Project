@@ -5,8 +5,9 @@
  */
 package hr.algebra;
 
-import hr.algebra.view.EditArticlesPanel;
-import hr.algebra.view.UploadArticlesPanel;
+import hr.algebra.view.adminview.EditArticlesPanel;
+import hr.algebra.view.adminview.UploadArticlesPanel;
+import hr.algebra.view.userview.ApprovedNewspaper;
 import hr.algebra.view.userview.EditJournalistPanel;
 import hr.algebra.view.userview.EditNewsPanel;
 import hr.algebra.view.userview.EditNewspaperPanel;
@@ -20,10 +21,12 @@ public class UserFrame extends javax.swing.JFrame {
     private static final String EDIT_NEWS_ARTICLES = "Edit News";
     private static final String EDIT_JOURNALIST_ARTICLES = "Edit Journalists";
     private static final String EDIT_NEWSPAPER = "Edit Newspaper";
+    private static final String APPROVE_NEWSPAPER = "Approve Newspaper";
     /**
      * Creates new form UserFrame
+     * @throws java.lang.Exception
      */
-    public UserFrame() {
+    public UserFrame() throws Exception {
         initComponents();
         configurePanels();
     }
@@ -62,10 +65,11 @@ public class UserFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-public void configurePanels(){
+public void configurePanels() throws Exception{
         tpUserPanes.add(EDIT_NEWS_ARTICLES, new EditNewsPanel());
         tpUserPanes.add(EDIT_JOURNALIST_ARTICLES, new EditJournalistPanel());
         tpUserPanes.add(EDIT_NEWSPAPER, new EditNewspaperPanel());
+        tpUserPanes.add(APPROVE_NEWSPAPER, new ApprovedNewspaper());
     
 }
  

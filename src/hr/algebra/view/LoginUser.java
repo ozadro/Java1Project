@@ -8,18 +8,10 @@ package hr.algebra.view;
 import hr.algebra.AdminFrame;
 import hr.algebra.UserFrame;
 import hr.algebra.dal.RepositoryFactory;
-import hr.algebra.dal.sql.DataSourceSingleton;
 import hr.algebra.model.User;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.sql.DataSource;
-import javax.swing.JOptionPane;
 
 
 
@@ -139,15 +131,23 @@ public class LoginUser extends javax.swing.JPanel {
              if(!username.equals(u.username) && password.equals(u.password) ){
                  lbUsernameError.setText("X");
                  lbPasswordError.setText("X");
-             }
-             
-             
-             if( rbAdmin.isSelected() == true && u.isAdmin() == false){
+                  if( rbAdmin.isSelected() == true && u.isAdmin() == false){
                      lbUsernameError.setText("X");
                      lbPasswordError.setText("X");
                      System.out.println("he's not admin");
                      
+                 } 
+                 
+             }else if (!rbAdmin.isSelected() && u.isAdmin() == true)
+                 {
+                 lbUsernameError.setText("X");
+                     lbPasswordError.setText("X");
+                     System.out.println("he's admin, select the admin option");
+                 
                  }
+             
+             
+            
              
              else if(username.equals(u.username) && password.equals(u.password))
              {
@@ -155,9 +155,16 @@ public class LoginUser extends javax.swing.JPanel {
                  if(u.isAdmin() != true){
                  lbUsernameError.setText(" ");
                  lbPasswordError.setText(" ");
-                 UserFrame userFrame = new UserFrame();
-                 userFrame.setVisible(true);
-                     System.out.println("user has logged in");
+                     try {
+                        UserFrame userFrame;
+                        userFrame = new UserFrame();
+                        userFrame.setVisible(true);
+                        System.out.println("user has logged in");
+                         
+                     } catch (Exception ex) {
+                         Logger.getLogger(LoginUser.class.getName()).log(Level.SEVERE, null, ex);
+                     }
+               
                  }
 
                else if(rbAdmin.isSelected() == u.isAdmin() && u.isAdmin() == true){

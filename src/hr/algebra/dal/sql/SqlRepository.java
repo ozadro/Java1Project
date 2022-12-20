@@ -8,6 +8,7 @@ package hr.algebra.dal.sql;
 import hr.algebra.dal.Repository;
 import hr.algebra.model.Article;
 import hr.algebra.model.Journalists;
+import hr.algebra.model.Newspaper;
 import hr.algebra.model.User;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -45,6 +46,15 @@ public class SqlRepository implements Repository {
     private static final String LASTNAME = "LastName";
     private static final String AGE = "Age";
     private static final String EMAIL = "Email";
+    
+    
+    private static final String ID_NEWSPAPER = "IDNewspaper";
+    private static final String JOURNALIST_ID = "JournalistID";
+    private static final String JOURNALIST = "Journalist";
+    
+    private static final String ARTICLE_ID = "ArticleID";
+    private static final String ARTICLE= "Article";
+
 
     private static final String CREATE_ARTICLE = "{ CALL createArticle (?,?,?,?,?,?) }";
     private static final String UPDATE_ARTICLE = "{ CALL updateArticle (?,?,?,?,?,?) }";
@@ -61,7 +71,15 @@ public class SqlRepository implements Repository {
     private static final String DELETE_JOURNALIST = "{ CALL deleteJournalist (?) }";
     private static final String SELECT_JOURNALIST = "{ CALL selectJournalist (?) }";
     private static final String SELECT_JOURNALISTS = "{ CALL selectJournalists }";
-     private static final String DELETE_JOURNALISTS = "{ CALL deleteAllJournalists }";
+    private static final String DELETE_JOURNALISTS = "{ CALL deleteAllJournalists }";
+     
+    private static final String CREATE_NEWSPAPER = "{ CALL createNewspaper (?,?,?,?,?) }";
+    private static final String UPDATE_NEWSPAPER = "{ CALL updateNewspaper (?,?,?,?,?) }";
+    private static final String DELETE_NEWSPAPER = "{ CALL deleteNewspaper (?) }";
+    private static final String SELECT_NEWSPAPER = "{ CALL selectNewspaper (?) }";
+    private static final String SELECT_NEWSPAPERS = "{ CALL selectNewspapers }";
+    private static final String DELETE_NEWSPAPERS = "{ CALL deleteAllNewspaper }";
+     
     
     @Override
     public List<User> selectUsers()  {
@@ -338,6 +356,126 @@ public class SqlRepository implements Repository {
           DataSource dataSource = DataSourceSingleton.getInstance();
         try (Connection con = dataSource.getConnection();
                 CallableStatement stmt = con.prepareCall(DELETE_JOURNALISTS);)
+                {
+                    stmt.execute();
+    }   catch (SQLException ex) {
+            Logger.getLogger(SqlRepository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public int createNewspaper(Newspaper newspaper) throws Exception {
+       DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(CREATE_NEWSPAPER)) {
+
+
+            
+            stmt.setString("@" + TITLE, newspaper.getTitle());
+            stmt.setInt("@" + JOURNALIST_ID, newspaper.getJournalistID());
+            stmt.setInt("@" + ARTICLE_ID,newspaper.getArticleID());
+            stmt.setString("@" + PICTURE_PATH, newspaper.getPicturePath());
+            stmt.registerOutParameter("@" + ID_NEWSPAPER, Types.INTEGER);
+            stmt.executeUpdate();
+            return stmt.getInt("@" + ID_NEWSPAPER);
+        }
+    }
+
+    @Override
+    public void createNewspapers(List<Newspaper> newspapers) throws Exception {
+         DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(CREATE_ARTICLE)) {
+           
+            for (Newspaper newspaper : newspapers) {
+            stmt.setString("@" + TITLE, newspaper.getTitle());
+            stmt.setInt("@" + JOURNALIST_ID, newspaper.getJournalistID());
+            stmt.setInt("@" + ARTICLE_ID,newspaper.getArticleID());
+            stmt.setString("@" + PICTURE_PATH, newspaper.getPicturePath());
+            stmt.registerOutParameter("@" + ID_NEWSPAPER, Types.INTEGER);
+            stmt.executeUpdate();
+            }
+        }
+    }
+
+    @Override
+    public void updateNewspaper(int id, Newspaper data) throws Exception {
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(UPDATE_NEWSPAPER)) {
+            
+
+             stmt.setString("@" + TITLE, data.getTitle());
+            stmt.setInt("@" + JOURNALIST_ID, data.getJournalistID());
+            stmt.setInt("@" + ARTICLE_ID, data.getArticleID());
+            stmt.setString("@" + PICTURE_PATH, data.getPicturePath());
+            stmt.setInt("@" + ID_NEWSPAPER, id);
+
+            stmt.executeUpdate();
+        }
+    }
+
+    @Override
+    public void deleteNewspaper(int id) throws Exception {
+         DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(DELETE_NEWSPAPER)) {
+
+            stmt.setInt("@" + ID_NEWSPAPER, id);
+
+            stmt.executeUpdate();
+        }
+    }
+
+    @Override
+    public Optional<Newspaper> selectNewspaper(int id) throws Exception {
+         DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(SELECT_NEWSPAPER)) {
+
+            stmt.setInt("@" + ID_NEWSPAPER , id);
+            
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+            
+                if (rs.next()) {
+                    return Optional.of(new Newspaper( 
+                            rs.getInt(ID_NEWSPAPER),
+                            rs.getString(TITLE),
+                            rs.getInt(JOURNALIST_ID),
+                            rs.getInt(ARTICLE_ID),
+                            rs.getString(PICTURE_PATH)));
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Newspaper> selectNewspapers() throws Exception {
+        List<Newspaper> newspapers = new ArrayList<>();
+        DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(SELECT_NEWSPAPERS);
+                ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                newspapers.add(new Newspaper(
+                        rs.getInt(ID_NEWSPAPER),
+                            rs.getString(TITLE),
+                            rs.getInt(JOURNALIST_ID),
+                            rs.getInt(ARTICLE_ID),
+                            rs.getString(PICTURE_PATH)));
+            }
+        }
+        return newspapers;
+    }
+
+    @Override
+    public void deleteAllNewspapers() {
+          DataSource dataSource = DataSourceSingleton.getInstance();
+        try (Connection con = dataSource.getConnection();
+                CallableStatement stmt = con.prepareCall(DELETE_NEWSPAPERS);)
                 {
                     stmt.execute();
     }   catch (SQLException ex) {

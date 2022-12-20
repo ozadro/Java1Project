@@ -5,11 +5,8 @@
  */
 package hr.algebra;
 
-import hr.algebra.dal.RepositoryFactory;
-import hr.algebra.view.EditArticlesPanel;
-import hr.algebra.view.UploadArticlesPanel;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import hr.algebra.view.adminview.EditArticlesPanel;
+import hr.algebra.view.adminview.UploadArticlesPanel;
 
 /**
  *

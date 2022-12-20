@@ -50,8 +50,6 @@ public class JournalistTableModel extends AbstractTableModel {
                 return journalists.get(rowIndex).getEmail();
             case 5:
                 return journalists.get(rowIndex).getPicturePath();
-         
-            
             default:
                 throw new RuntimeException("No such column");
         }

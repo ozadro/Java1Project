@@ -306,7 +306,7 @@ public class EditJournalistPanel extends javax.swing.JPanel {
                 fillForm(selectedJournalist);
             }
         } catch (Exception ex) {
-            Logger.getLogger(AdminFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EditJournalistPanel.class.getName()).log(Level.SEVERE, null, ex);
             MessageUtils.showErrorMessage("Error", "Unable to show journalist!");
         }
     }
@@ -337,7 +337,7 @@ public class EditJournalistPanel extends javax.swing.JPanel {
 
                 clearForm();
             } catch (Exception ex) {
-                Logger.getLogger(AdminFrame.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(EditJournalistPanel.class.getName()).log(Level.SEVERE, null, ex);
                 MessageUtils.showErrorMessage("Error", "Unable to create journalist!");
             }
         }
@@ -431,7 +431,7 @@ public class EditJournalistPanel extends javax.swing.JPanel {
         try {
             label.setIcon(IconUtils.createIcon(file, label.getWidth(), label.getHeight()));
         } catch (IOException ex) {
-            Logger.getLogger(AdminFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EditJournalistPanel.class.getName()).log(Level.SEVERE, null, ex);
             MessageUtils.showErrorMessage("Error", "Unable to set icon!");
         }
     }
